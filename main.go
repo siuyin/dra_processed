@@ -55,14 +55,18 @@ func main() {
 	if err != nil {
 		log.Fatal("bad NUM_FILES:", err)
 	}
+	ytd := yesterday(time.Now())
 
 	// Report Levels
-	rptLvls := strings.Split(os.Getenv("REPORT_LEVELS"), ",")
-	fmt.Printf("%q\n", rptLvls)
+	rptLvls := regexp.MustCompile(reformat(os.Getenv("REPORT_LEVELS"), ",", "|"))
 
 	// Text to scan.
-	scnTxt := strings.Split(os.Getenv("SCAN_TEXT"), ",")
-	fmt.Printf("%q\n", scnTxt)
+	scnTxt := regexp.MustCompile(reformat(os.Getenv("SCAN_TEXT"), ",", "|"))
+	dateRe := regexp.MustCompile(os.Getenv("DATE_REGEXP"))
+	numDays, err := strconv.Atoi(os.Getenv("NUM_DAYS"))
+	if err != nil {
+		log.Fatal("bad NUM_DAYS:", err)
+	}
 
 loop:
 	for i, v := range files {
@@ -76,11 +80,10 @@ loop:
 		scanner := bufio.NewScanner(file)
 		for scanner.Scan() {
 			line := scanner.Text()
-			for _, lvl := range rptLvls {
-				for _, scn := range scnTxt {
-					if strings.Contains(line, lvl) && strings.Contains(line, scn) {
-						fmt.Println(scanner.Text())
-					}
+			if rptLvls.MatchString(line) && scnTxt.MatchString(line) {
+				dt, _ := extractDate(line, dateRe)
+				if dateInRange(dt, ytd, numDays) {
+					fmt.Println(dt, line)
 				}
 			}
 		}
