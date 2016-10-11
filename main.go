@@ -83,7 +83,7 @@ loop:
 			if rptLvls.MatchString(line) && scnTxt.MatchString(line) {
 				dt, _ := extractDate(line, dateRe)
 				if dateInRange(dt, ytd, numDays) {
-					fmt.Println(dt, line)
+					fmt.Println(line)
 				}
 			}
 		}
