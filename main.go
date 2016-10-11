@@ -1,3 +1,4 @@
+// dra_processed reporting tool
 package main
 
 import (
@@ -75,6 +76,7 @@ loop:
 		if err != nil {
 			log.Fatal("file open:", err)
 		}
+		defer file.Close()
 
 		// Create a new scanner.
 		scanner := bufio.NewScanner(file)
