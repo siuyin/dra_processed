@@ -76,7 +76,6 @@ loop:
 		if err != nil {
 			log.Fatal("file open:", err)
 		}
-		defer file.Close()
 
 		// Create a new scanner.
 		scanner := bufio.NewScanner(file)
@@ -94,6 +93,7 @@ loop:
 			log.Fatal("scanner:", err)
 		}
 
+		file.Close()
 		// Break if limit is read.
 		if i >= limit-1 {
 			break loop
